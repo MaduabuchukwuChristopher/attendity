@@ -10,7 +10,7 @@ COPY packages packages
 RUN npm ci
 RUN npm run build -w @qr/types && npm run build -w @qr/shared && npm run build -w @qr/ui && npm run build -w @qr/landing
 
-FROM nginx:1.29-alpine AS production
+FROM nginx:1.31-alpine AS production
 COPY docker/static-nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /workspace/apps/landing/dist /usr/share/nginx/html
 EXPOSE 80
