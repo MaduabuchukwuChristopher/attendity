@@ -2,6 +2,7 @@
   "name": "qr-attendance-system",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Enterprise multi-tenant attendance and academic engagement platform for post-secondary institutions.",
   "packageManager": "npm@11.12.1",

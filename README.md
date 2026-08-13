@@ -96,4 +96,6 @@ Interactive endpoint documentation is generated from the versioned OpenAPI 3.1 d
 
 Enable Atlas continuous backups and regularly test restores into an isolated project. `npm run backup -w @qr/api`, `npm run restore -w @qr/api`, and `npm run seed -w @qr/api` are guarded operational commands; see the operations guide before using them.
 
-Attendity is proprietary institution software. Do not deploy demonstration credentials or example secrets.
+## License
+
+Attendity is available under the [MIT License](LICENSE). Do not deploy demonstration credentials or example secrets.

@@ -1015,7 +1015,7 @@ export const openApiDocument = {
     description:
       'Production API for multi-tenant post-secondary attendance, analytics, notifications, and examination clearance.',
     contact: { name: 'Attendity engineering', email: 'engineering@attendity.ng' },
-    license: { name: 'Proprietary' },
+    license: { name: 'MIT', identifier: 'MIT' },
   },
   servers: [{ url: environment.API_PUBLIC_URL, description: environment.NODE_ENV }],
   tags: [...new Set(routes.map((route) => route.tag))].map((name) => ({ name })),
