@@ -55,7 +55,7 @@ Use these values after Render assigns the API hostname:
 | `RESEND_FROM`                     | Verified sender, for example `Attendity <no-reply@example.edu>`      |
 | `CLOUDINARY_*`                    | Cloudinary cloud name, API key, and API secret                       |
 
-The Blueprint generates separate JWT, QR encryption, QR signing, and report signing secrets. It also disables demo seeding, restore, and migration switches by default. The API listens on port `10000`, permits WebSocket upgrades, and exposes readiness at `/api/v1/health/ready`.
+The Blueprint generates separate JWT, QR encryption, QR signing, and report signing secrets. It also disables demo seeding, restore, and migration switches by default. The build installs compiler declarations before pruning development dependencies from the runtime installation. The API listens on port `10000`, permits WebSocket upgrades, and exposes readiness at `/api/v1/health/ready`.
 
 ## Vercel landing and portal
 

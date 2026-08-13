@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm ci && npm run build -w @qr/api
+    buildCommand: npm ci --include=dev && npm run build -w @qr/api && npm prune --omit=dev
     startCommand: npm run start -w @qr/api
     healthCheckPath: /api/v1/health/ready
     autoDeployTrigger: checksPass
