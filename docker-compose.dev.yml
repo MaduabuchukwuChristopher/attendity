@@ -1,0 +1,33 @@
+services:
+  api:
+    build:
+      target: build
+    environment:
+      NODE_ENV: development
+      ENFORCE_HTTPS: 'false'
+      TRUST_PROXY: 'true'
+    command: npm run dev -w @qr/api
+    volumes:
+      - .:/workspace
+      - api_node_modules:/workspace/node_modules
+
+  web:
+    build:
+      target: build
+    command: npm run dev -w @qr/web -- --host 0.0.0.0
+    volumes:
+      - .:/workspace
+      - web_node_modules:/workspace/node_modules
+
+  landing:
+    build:
+      target: build
+    command: npm run dev -w @qr/landing -- --host 0.0.0.0
+    volumes:
+      - .:/workspace
+      - landing_node_modules:/workspace/node_modules
+
+volumes:
+  api_node_modules:
+  web_node_modules:
+  landing_node_modules:

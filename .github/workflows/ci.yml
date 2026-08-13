@@ -1,0 +1,71 @@
+name: Continuous integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://127.0.0.1:27017/attendity_test
+      JWT_ACCESS_SECRET: test-access-secret-with-at-least-32-characters
+      JWT_REFRESH_SECRET: test-refresh-secret-with-at-least-32-characters
+      CORS_ORIGIN: http://127.0.0.1:4174
+      VITE_API_URL: http://127.0.0.1:4000/api/v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run security:audit
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: attendity-build-and-test-artifacts
+          path: |
+            apps/*/dist
+            playwright-report
+            test-results
+          retention-days: 14
+
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/api.Dockerfile
+          push: false
+          tags: attendity-api:${{ github.sha }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/web.Dockerfile
+          push: false
+          tags: attendity-web:${{ github.sha }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/landing.Dockerfile
+          push: false
+          tags: attendity-landing:${{ github.sha }}

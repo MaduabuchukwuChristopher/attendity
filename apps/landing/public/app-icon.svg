@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Attendity</title>
+  <rect width="512" height="512" rx="112" fill="#0B6B4F"/>
+  <path fill="#fff" d="M120 112h112v112H120V112Zm32 32v48h48v-48h-48Zm128-32h112v112H280V112Zm32 32v48h48v-48h-48ZM120 272h112v112H120V272Zm32 32v48h48v-48h-48Zm128-32h48v48h-48v-48Zm64 0h48v112h-48V272Zm-64 64h48v48h-48v-48Z"/>
+</svg>

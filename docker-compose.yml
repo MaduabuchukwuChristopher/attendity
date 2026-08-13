@@ -1,0 +1,65 @@
+name: attendity
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: production
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      API_PORT: 4000
+      TRUST_PROXY: 'true'
+      ENFORCE_HTTPS: '${ENFORCE_HTTPS:-true}'
+    expose:
+      - '4000'
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args:
+        VITE_API_URL: '${VITE_API_URL:-http://app.attendity.local:8080/api/v1}'
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true
+
+  landing:
+    build:
+      context: .
+      dockerfile: docker/landing.Dockerfile
+      args:
+        VITE_API_URL: '${VITE_API_URL:-http://attendity.local:8080/api/v1}'
+        VITE_PORTAL_URL: '${VITE_PORTAL_URL:-http://app.attendity.local:8080/login}'
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true
+
+  nginx:
+    image: nginx:1.29-alpine
+    depends_on:
+      - api
+      - web
+      - landing
+    ports:
+      - '8080:80'
+    volumes:
+      - ./docker/edge-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true

@@ -1,0 +1,20 @@
+export const designTokens = {
+  color: {
+    primary: '#0B6B4F',
+    primaryDark: '#07513B',
+    universityNavy: '#0B2638',
+    academicGold: '#C99A2E',
+    sage: '#E7F3ED',
+    terracotta: '#B85C3C',
+    background: '#F8FAFC',
+    surface: '#FFFFFF',
+    darkBackground: '#0F172A',
+    darkSurface: '#111827',
+    border: '#E5E7EB',
+    success: '#16A34A',
+    warning: '#F59E0B',
+    danger: '#DC2626',
+    info: '#2563EB',
+  },
+  transition: { fast: 150, base: 250, slow: 350 },
+} as const;

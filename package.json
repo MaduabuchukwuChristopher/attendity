@@ -1,0 +1,44 @@
+{
+  "name": "qr-attendance-system",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Enterprise multi-tenant attendance and academic engagement platform for post-secondary institutions.",
+  "packageManager": "npm@11.12.1",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n landing,web,api -c green,blue,magenta \"npm run dev -w @qr/landing\" \"npm run dev -w @qr/web\" \"npm run dev -w @qr/api\"",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "node --max-old-space-size=4096 ./node_modules/eslint/bin/eslint.js . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --build tsconfig.build.json && tsc -p e2e/tsconfig.json --noEmit",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report",
+    "security:audit": "npm audit --omit=dev --audit-level=critical"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "nx": "23.1.1"
+  }
+}
