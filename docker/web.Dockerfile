@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS build
+FROM node:26-bookworm-slim AS build
 WORKDIR /workspace
 ARG VITE_API_URL=http://app.attendity.local:8080/api/v1
 ENV VITE_API_URL=$VITE_API_URL
