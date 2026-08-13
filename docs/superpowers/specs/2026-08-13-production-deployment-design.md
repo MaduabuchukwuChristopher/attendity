@@ -31,6 +31,7 @@ The current `onboarding@resend.dev` sender is acceptable for assessment testing 
 - Keep all real values exclusively in ignored local environment files and hosting-provider secret stores.
 - Generate distinct production values for access JWT, refresh JWT, QR encryption, QR signing, and report signing secrets.
 - Configure exact Vercel origins in `CORS_ORIGIN`, the dashboard URL in `WEB_APP_URL`, and the API and clearance URLs after the hosting platforms allocate domains.
+- Use a secure, host-only refresh cookie with `SameSite=None` when the dashboard and API use separate Vercel and Render domains. `COOKIE_DOMAIN` remains optional for a future shared parent domain and must be omitted for provider-assigned domains.
 - Keep demo seeding disabled during ordinary production startup. Run it only as an explicit one-off assessment setup operation.
 
 ## Deployment sequence
@@ -39,7 +40,7 @@ The current `onboarding@resend.dev` sender is acceptable for assessment testing 
 2. Create the Render API service from the public GitHub repository and configure secrets.
 3. Verify the API readiness endpoint, Atlas connection, Cloudinary configuration, and Resend delivery.
 4. Create separate Vercel projects for the dashboard and landing applications.
-5. Set their build-time API and portal URLs, deploy them, then update the API's exact CORS and public URL settings.
+5. Set their build-time API and portal URLs, deploy them, then update the API's exact CORS, cookie, and public URL settings.
 6. Redeploy affected services and run focused production smoke checks for health, registration/email, login, profile media, static QR attendance, live Socket.IO updates, reports, and clearance verification.
 
 ## Failure handling and free-tier constraints
