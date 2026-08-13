@@ -58,7 +58,7 @@ const environmentSchema = z
     JWT_REFRESH_SECRET: z.string().min(32),
     JWT_ACCESS_TTL: z.string().default('15m'),
     JWT_REFRESH_TTL: z.string().default('7d'),
-    COOKIE_DOMAIN: z.string().min(1).default('localhost'),
+    COOKIE_DOMAIN: optionalString,
     CORS_ORIGIN: z.string().min(1),
     BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(14).default(12),
     REFRESH_COOKIE_NAME: z.string().min(1).default('attendity_refresh'),

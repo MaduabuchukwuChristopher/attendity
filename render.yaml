@@ -1,0 +1,66 @@
+services:
+  - type: web
+    name: attendity-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build -w @qr/api
+    startCommand: npm run start -w @qr/api
+    healthCheckPath: /api/v1/health/ready
+    autoDeployTrigger: checksPass
+    maxShutdownDelaySeconds: 30
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: 10000
+      - key: TRUST_PROXY
+        value: true
+      - key: ENFORCE_HTTPS
+        value: true
+      - key: ENABLE_API_DOCS
+        value: true
+      - key: API_PUBLIC_URL
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: CLEARANCE_VERIFICATION_BASE_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: QR_ENCRYPTION_SECRET
+        generateValue: true
+      - key: QR_SIGNING_SECRET
+        generateValue: true
+      - key: REPORT_SIGNING_SECRET
+        generateValue: true
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: attendity
+      - key: ALLOW_DEMO_SEED
+        value: false
+      - key: ALLOW_DATABASE_RESTORE
+        value: false
+      - key: ALLOW_INSTITUTION_CONFIG_MIGRATION
+        value: false
+      - key: ALLOW_CLASS_REMINDER_MIGRATION
+        value: false
+      - key: ALLOW_ANNOUNCEMENT_MIGRATION
+        value: false
+      - key: ALLOW_EVENT_MIGRATION
+        value: false

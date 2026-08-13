@@ -2,12 +2,14 @@ import type { RequestHandler } from 'express';
 import { environment } from '../config/environment.js';
 import { authService } from '../services/auth.service.js';
 import { invitationService } from '../services/invitation.service.js';
-const cookieOptions = (persistent = false) => ({
+export const refreshCookieOptions = (persistent = false) => ({
   httpOnly: true,
   secure: environment.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  sameSite: environment.NODE_ENV === 'production' ? ('none' as const) : ('strict' as const),
   path: '/api/v1/auth',
-  domain: environment.NODE_ENV === 'production' ? environment.COOKIE_DOMAIN : undefined,
+  ...(environment.NODE_ENV === 'production' && environment.COOKIE_DOMAIN
+    ? { domain: environment.COOKIE_DOMAIN }
+    : {}),
   ...(persistent ? { maxAge: 7 * 24 * 60 * 60 * 1000 } : {}),
 });
 const client = (request: Parameters<RequestHandler>[0]) => ({
@@ -62,7 +64,7 @@ export const login: RequestHandler = async (request, response, next) => {
       .cookie(
         environment.REFRESH_COOKIE_NAME,
         tokens.refreshToken,
-        cookieOptions(request.body.rememberMe),
+        refreshCookieOptions(request.body.rememberMe),
       )
       .status(200)
       .json({
@@ -85,7 +87,11 @@ export const refresh: RequestHandler = async (request, response, next) => {
       ...Object.values(client(request)),
     );
     response
-      .cookie(environment.REFRESH_COOKIE_NAME, tokens.refreshToken, cookieOptions(persistent))
+      .cookie(
+        environment.REFRESH_COOKIE_NAME,
+        tokens.refreshToken,
+        refreshCookieOptions(persistent),
+      )
       .json({
         success: true,
         message: 'Session refreshed.',
@@ -100,7 +106,10 @@ export const logout: RequestHandler = async (request, response, next) => {
   try {
     const token = request.cookies[environment.REFRESH_COOKIE_NAME] as unknown;
     if (typeof token === 'string') await authService.revoke(token);
-    response.clearCookie(environment.REFRESH_COOKIE_NAME, cookieOptions()).status(204).send();
+    response
+      .clearCookie(environment.REFRESH_COOKIE_NAME, refreshCookieOptions())
+      .status(204)
+      .send();
   } catch (error) {
     next(error);
   }
@@ -176,7 +185,10 @@ export const logoutAll: RequestHandler = async (request, response, next) => {
     if (!request.actor)
       throw Object.assign(new Error('Authentication is required.'), { statusCode: 401 });
     await authService.revokeAll(request.actor.id);
-    response.clearCookie(environment.REFRESH_COOKIE_NAME, cookieOptions()).status(204).send();
+    response
+      .clearCookie(environment.REFRESH_COOKIE_NAME, refreshCookieOptions())
+      .status(204)
+      .send();
   } catch (error) {
     next(error);
   }

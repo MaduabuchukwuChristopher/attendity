@@ -48,7 +48,7 @@ The guarded seed creates an idempotent, semester-scale fictional institution dat
 
 ## Environment and security
 
-Production startup validates all critical configuration and rejects missing dedicated QR/report secrets, SMTP delivery, or disabled HTTPS enforcement. Set `TRUST_PROXY=true` only behind a trusted ingress. `VITE_API_URL` must be an absolute public URL; `VITE_PORTAL_URL` links the landing site to institution sign-in; `WEB_APP_URL` creates verification and reset links; `CLEARANCE_VERIFICATION_BASE_URL` must end at the product verification route.
+Production startup validates all critical configuration and rejects missing dedicated QR/report secrets, transactional email delivery, or disabled HTTPS enforcement. Resend HTTPS delivery is preferred on Render; complete SMTP settings remain a fallback. Set `TRUST_PROXY=true` only behind a trusted ingress. `VITE_API_URL` must be an absolute public URL; `VITE_PORTAL_URL` links the landing site to institution sign-in; `WEB_APP_URL` creates verification and reset links; `CLEARANCE_VERIFICATION_BASE_URL` must end at the product verification route. See [the deployment guide](docs/deployment.md) for the Render, Vercel, Atlas, Cloudinary, and Resend production topology.
 
 Face verification is optional. When enabled, set `FACE_VERIFICATION_API_URL`, `FACE_VERIFICATION_API_KEY`, and a threshold from `0.5` to `1`. The provider must support:
 
