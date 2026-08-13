@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import { environment } from '../config/environment.js';
 import { logger } from '../config/logger.js';
+import { createEmailDelivery } from './email-delivery.js';
 
 const transport = environment.SMTP_HOST
   ? nodemailer.createTransport({
@@ -13,6 +14,12 @@ const transport = environment.SMTP_HOST
           : undefined,
     })
   : null;
+const delivery = createEmailDelivery({
+  resendApiKey: environment.RESEND_API_KEY,
+  resendFrom: environment.RESEND_FROM,
+  smtpFrom: environment.SMTP_FROM,
+  smtpSend: transport ? (message) => transport.sendMail(message) : undefined,
+});
 const escapeHtml = (value: string) =>
   value
     .replaceAll('&', '&amp;')
@@ -21,23 +28,15 @@ const escapeHtml = (value: string) =>
     .replaceAll('"', '&quot;');
 
 async function deliver(to: string, subject: string, text: string, html: string): Promise<void> {
-  if (!transport || !environment.SMTP_FROM) {
+  if (!delivery) {
     if (environment.NODE_ENV === 'production') throw new Error('Email delivery is unavailable.');
-    logger.info({ to, subject }, 'Development email suppressed because SMTP is not configured');
+    logger.info({ to, subject }, 'Development email suppressed because delivery is not configured');
     return;
   }
-  await transport.sendMail({
-    from: environment.SMTP_FROM,
-    to,
-    subject,
-    text,
-    html,
-    disableFileAccess: true,
-    disableUrlAccess: true,
-  });
+  await delivery.send({ to, subject, text, html });
 }
 
-const configured = Boolean(transport && environment.SMTP_FROM);
+const configured = Boolean(delivery);
 
 export const emailService = {
   isConfigured: () => configured,

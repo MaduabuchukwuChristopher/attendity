@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 import request from 'supertest';
 
@@ -7,6 +9,43 @@ process.env.JWT_ACCESS_SECRET = 'test-access-secret-with-at-least-32-characters'
 process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-with-at-least-32-characters';
 process.env.CORS_ORIGIN = 'http://127.0.0.1:4174';
 const { app } = await import('../src/app.js');
+
+const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url));
+const productionEnvironment = {
+  NODE_ENV: 'production',
+  MONGODB_URI: 'mongodb://127.0.0.1:27017/attendity_test',
+  JWT_ACCESS_SECRET: 'production-access-secret-with-at-least-32-characters',
+  JWT_REFRESH_SECRET: 'production-refresh-secret-with-at-least-32-characters',
+  QR_ENCRYPTION_SECRET: 'production-qr-encryption-secret-at-least-32-characters',
+  QR_SIGNING_SECRET: 'production-qr-signing-secret-with-at-least-32-characters',
+  REPORT_SIGNING_SECRET: 'production-report-secret-with-at-least-32-characters',
+  CORS_ORIGIN: 'https://attendity-app.vercel.app',
+  ENFORCE_HTTPS: 'true',
+  SMTP_HOST: '',
+  SMTP_USER: '',
+  SMTP_PASSWORD: '',
+  SMTP_FROM: '',
+  RESEND_API_KEY: '',
+  RESEND_FROM: '',
+};
+
+function loadProductionEnvironment(overrides: Record<string, string>) {
+  return spawnSync(
+    process.execPath,
+    [
+      '--import',
+      'tsx',
+      '--input-type=module',
+      '--eval',
+      "import('./apps/api/src/config/environment.ts')",
+    ],
+    {
+      cwd: repositoryRoot,
+      encoding: 'utf8',
+      env: { ...process.env, ...productionEnvironment, ...overrides },
+    },
+  );
+}
 
 void describe('production readiness middleware', () => {
   void it('publishes liveness with hardened response headers and a request id', async () => {
@@ -45,5 +84,25 @@ void describe('production readiness middleware', () => {
   void it('returns unavailable readiness when MongoDB is disconnected', async () => {
     const response = await request(app).get('/api/v1/health/ready').expect(503);
     assert.match(response.text, /"status":"unavailable"/);
+  });
+
+  void it('accepts complete Resend configuration without SMTP in production', () => {
+    const result = loadProductionEnvironment({
+      RESEND_API_KEY: 're_test_value_not_a_real_secret',
+      RESEND_FROM: 'Attendity <onboarding@resend.dev>',
+    });
+    assert.equal(result.status, 0, result.stderr);
+  });
+
+  void it('rejects a Resend API key without a sender', () => {
+    const result = loadProductionEnvironment({
+      RESEND_API_KEY: 're_test_value_not_a_real_secret',
+    });
+    assert.notEqual(result.status, 0);
+  });
+
+  void it('rejects production when neither Resend nor SMTP is complete', () => {
+    const result = loadProductionEnvironment({});
+    assert.notEqual(result.status, 0);
   });
 });

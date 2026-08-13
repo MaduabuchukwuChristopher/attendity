@@ -80,6 +80,8 @@ const environmentSchema = z
     SMTP_USER: optionalString,
     SMTP_PASSWORD: optionalString,
     SMTP_FROM: optionalString,
+    RESEND_API_KEY: optionalSecret,
+    RESEND_FROM: optionalString,
     IP_COUNTRY_PROVIDER_URL_TEMPLATE: optionalUrlTemplate,
     IP_COUNTRY_PROVIDER_TOKEN: optionalString,
     IP_COUNTRY_TIMEOUT_MS: z.coerce.number().int().min(300).max(5000).default(1500),
@@ -123,6 +125,12 @@ const environmentSchema = z
         message: 'Both face verification provider variables must be configured together.',
         path: ['FACE_VERIFICATION_API_URL'],
       });
+    if (Boolean(values.RESEND_API_KEY) !== Boolean(values.RESEND_FROM))
+      context.addIssue({
+        code: 'custom',
+        message: 'Both Resend API key and sender must be configured together.',
+        path: ['RESEND_API_KEY'],
+      });
     const pushValues = [
       values.PUSH_DELIVERY_API_URL,
       values.PUSH_DELIVERY_API_TOKEN,
@@ -165,14 +173,15 @@ const environmentSchema = z
         message: 'HTTPS enforcement must be enabled in production.',
         path: ['ENFORCE_HTTPS'],
       });
-    if (
-      values.NODE_ENV === 'production' &&
-      (!values.SMTP_HOST || !values.SMTP_USER || !values.SMTP_PASSWORD || !values.SMTP_FROM)
-    )
+    const resendConfigured = Boolean(values.RESEND_API_KEY && values.RESEND_FROM);
+    const smtpConfigured = Boolean(
+      values.SMTP_HOST && values.SMTP_USER && values.SMTP_PASSWORD && values.SMTP_FROM,
+    );
+    if (values.NODE_ENV === 'production' && !resendConfigured && !smtpConfigured)
       context.addIssue({
         code: 'custom',
-        message: 'SMTP delivery must be configured in production.',
-        path: ['SMTP_HOST'],
+        message: 'Resend HTTPS or SMTP delivery must be configured in production.',
+        path: ['RESEND_API_KEY'],
       });
   })
   .transform((values) => ({
