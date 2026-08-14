@@ -12,16 +12,6 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    services:
-      mongodb:
-        image: mongo:8.0
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --quiet --eval \"db.adminCommand('ping')\""
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     env:
       NODE_ENV: test
       MONGODB_URI: mongodb://127.0.0.1:27017/attendity_test
@@ -35,6 +25,30 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Start MongoDB replica set
+        run: |
+          docker run --detach --name attendity-mongodb --publish 27017:27017 mongo:8.0 --replSet rs0 --bind_ip_all
+          for attempt in {1..30}; do
+            if docker exec attendity-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker logs attendity-mongodb
+              exit 1
+            fi
+            sleep 1
+          done
+          docker exec attendity-mongodb mongosh --quiet --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})"
+          for attempt in {1..30}; do
+            if docker exec attendity-mongodb mongosh --quiet --eval "db.hello().isWritablePrimary" | grep -q true; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker logs attendity-mongodb
+              exit 1
+            fi
+            sleep 1
+          done
       - run: npm ci
       - run: npm run format:check
       - run: npm run lint
