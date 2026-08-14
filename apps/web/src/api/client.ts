@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/auth-store.js';
 
 const configuredMode: unknown = import.meta.env.MODE;
 const configuredApiUrl: unknown = import.meta.env.VITE_API_URL;
+const hostedApiUrl = 'https://attendity-api.onrender.com/api/v1';
 
 export function resolveApiBaseUrl(
   apiUrl: string | undefined,
@@ -20,7 +21,7 @@ export function resolveApiBaseUrl(
     }
     return 'http://localhost:4000/api/v1';
   }
-  return '/api/v1';
+  return hostedApiUrl;
 }
 
 function resolveSocketUrl(baseUrl: string): string {

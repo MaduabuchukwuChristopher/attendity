@@ -10,11 +10,15 @@ describe('resolveApiBaseUrl', () => {
     expect(resolveApiBaseUrl(undefined, 'development')).toBe('http://localhost:4000/api/v1');
   });
 
-  it('falls back to a relative api path in production when the env var is missing', () => {
-    expect(resolveApiBaseUrl(undefined, 'production')).toBe('/api/v1');
+  it('uses the hosted Attendity API in production when the env var is missing', () => {
+    expect(resolveApiBaseUrl(undefined, 'production')).toBe(
+      'https://attendity-api.onrender.com/api/v1',
+    );
   });
 
-  it('falls back to a relative api path when the env var is blank', () => {
-    expect(resolveApiBaseUrl('   ', 'production')).toBe('/api/v1');
+  it('uses the hosted Attendity API in production when the env var is blank', () => {
+    expect(resolveApiBaseUrl('   ', 'production')).toBe(
+      'https://attendity-api.onrender.com/api/v1',
+    );
   });
 });
