@@ -68,7 +68,7 @@ export function AuthLayout({ children }: PropsWithChildren) {
             <BrandMark />
           </div>
           {children}
-          <p className="mt-7 text-center text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-7 text-center text-xs text-slate-600 dark:text-slate-300">
             Secure access for authorised institution users only.
           </p>
         </div>

@@ -90,6 +90,7 @@ export function DashboardToastProvider({ children }: PropsWithChildren) {
       <div
         aria-label="Dashboard notifications"
         className="pointer-events-none fixed right-4 top-20 z-[80] grid w-[min(24rem,calc(100vw-2rem))] gap-3"
+        role="region"
       >
         {toasts.map((toast) => (
           <ToastItem dismiss={dismiss} key={toast.id} toast={toast} />

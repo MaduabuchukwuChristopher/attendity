@@ -21,8 +21,8 @@ export function Navbar() {
   return (
     <motion.header
       className={`landing-navbar ${scrolled ? 'landing-navbar-scrolled' : 'landing-navbar-top'}`}
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5">
@@ -41,8 +41,8 @@ export function Navbar() {
           {navItems.map((item, index) => (
             <motion.nav
               key={item.to}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ y: -10 }}
+              animate={{ y: 0 }}
               transition={{ delay: 0.1 + index * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               <NavLink
@@ -60,8 +60,8 @@ export function Navbar() {
 
         <div className="hidden items-center gap-2.5 lg:flex">
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ x: 20 }}
+            animate={{ x: 0 }}
             transition={{ delay: 0.3, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
             <a className={buttonClassName('ghost', 'landing-signin')} href={portalUrl}>
@@ -69,8 +69,8 @@ export function Navbar() {
             </a>
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ x: 20 }}
+            animate={{ x: 0 }}
             transition={{ delay: 0.35, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
             <motion.div animate={{ scale: scrolled ? 0.98 : 1 }} transition={{ duration: 0.25 }}>

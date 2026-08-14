@@ -130,8 +130,8 @@ export function HomePage() {
           <div className="hero-grid" aria-hidden="true" />
           <div className="mx-auto grid max-w-7xl gap-14 px-5 pb-20 pt-14 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:pb-28 lg:pt-20">
             <motion.div
-              animate={reduceMotion ? false : { opacity: 1, x: 0 }}
-              initial={reduceMotion ? false : { opacity: 0, x: -24 }}
+              animate={reduceMotion ? false : { x: 0 }}
+              initial={reduceMotion ? false : { x: -24 }}
               transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="eyebrow-pill">

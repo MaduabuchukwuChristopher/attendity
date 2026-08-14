@@ -174,6 +174,7 @@ export function DashboardAnalyticsOverview({
         <div
           className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
           aria-label="Loading dashboard analytics"
+          role="status"
         >
           {Array.from({ length: 4 }, (_, index) => (
             <Skeleton className="h-32" key={index} />
