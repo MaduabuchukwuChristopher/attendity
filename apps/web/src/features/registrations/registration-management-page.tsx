@@ -385,7 +385,7 @@ export default function RegistrationManagementPage() {
           <label className="grid gap-2 text-sm font-medium">
             Student
             <select
-              className="h-11 rounded-xl border border-border bg-surface px-3"
+              className="h-11 rounded-xl border border-border bg-surface px-3 text-slate-900 dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100"
               name="studentId"
               required
             >
@@ -400,7 +400,7 @@ export default function RegistrationManagementPage() {
           <label className="grid gap-2 text-sm font-medium">
             Course
             <select
-              className="h-11 rounded-xl border border-border bg-surface px-3"
+              className="h-11 rounded-xl border border-border bg-surface px-3 text-slate-900 dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100"
               name="courseId"
               required
             >
@@ -415,7 +415,7 @@ export default function RegistrationManagementPage() {
           <label className="grid gap-2 text-sm font-medium">
             Registration number
             <input
-              className="h-11 rounded-xl border border-border bg-surface px-3"
+              className="h-11 rounded-xl border border-border bg-surface px-3 text-slate-900 dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100"
               maxLength={40}
               minLength={2}
               name="registrationNumber"
@@ -470,7 +470,7 @@ export default function RegistrationManagementPage() {
           <label className="grid gap-2 text-sm font-medium">
             Decision note
             <textarea
-              className="min-h-28 rounded-xl border border-border bg-surface p-3 dark:border-slate-700 dark:bg-dark-surface"
+              className="min-h-28 rounded-xl border border-border bg-surface p-3 text-slate-900 dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100"
               minLength={10}
               name="note"
               required

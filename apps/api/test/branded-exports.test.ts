@@ -134,7 +134,9 @@ void describe('analytics report artifacts', () => {
     assert.ok(sheet);
     assert.equal(sheet.getCell('A3').value, 'Reporting period');
     assert.equal(sheet.getCell('B3').value, '2026-08-01 to 2026-08-12');
-    assert.ok(sheet.getRow(6).values.includes('Latest attendance'));
+    const headerValues = sheet.getRow(6).values;
+    assert.ok(Array.isArray(headerValues));
+    assert.ok(headerValues.includes('Latest attendance'));
     assert.equal(sheet.getRow(36).getCell(1).value, 'Student 30');
     assert.ok(pdfPages >= 2);
   });

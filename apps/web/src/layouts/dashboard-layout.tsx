@@ -7,11 +7,13 @@ import { useTheme } from '../contexts/theme-context.js';
 import { useNotifications } from '../features/notifications/use-notifications.js';
 import { useInstitutionSettings } from '../features/settings/use-institution-settings.js';
 import { useAuthStore } from '../store/auth-store.js';
+import { useDashboardScrollbars } from '../hooks/use-dashboard-scrollbars.js';
 import { buildDashboardNavigation } from './dashboard-nav-config.js';
 import { DashboardSidebar } from './dashboard-sidebar.js';
 import { DashboardTopbar } from './dashboard-topbar.js';
 
 export function DashboardLayout({ children }: PropsWithChildren) {
+  useDashboardScrollbars();
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const navigate = useNavigate();

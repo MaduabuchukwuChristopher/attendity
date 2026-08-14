@@ -8,8 +8,14 @@ export async function downloadAnalyticsReport(
   filters: ReportFilters,
   reportId: string,
 ): Promise<void> {
+  const exportFilters = {
+    scope: filters.scope,
+    from: filters.from,
+    to: filters.to,
+    ...(filters.courseId ? { courseId: filters.courseId } : {}),
+  };
   const response = await apiClient.get<Blob>('/analytics/reports/export', {
-    params: { ...filters, format },
+    params: { ...exportFilters, format },
     responseType: 'blob',
   });
   const url = URL.createObjectURL(response.data);

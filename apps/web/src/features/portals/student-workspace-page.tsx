@@ -158,6 +158,7 @@ export default function StudentWorkspacePage() {
       setFeedback({ source, message, tone: 'success' });
       setSuccessNotification(message);
       await client.invalidateQueries({ queryKey: ['attendance', 'student'] });
+      await client.invalidateQueries({ queryKey: ['analytics'] });
     },
     onError: (error, { source }) =>
       setFeedback({

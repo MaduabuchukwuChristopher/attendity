@@ -303,6 +303,15 @@ export default function ReportsPage() {
                     tone: (row) => (row.sessionsAttended > 0 ? 'green' : 'gold'),
                   },
                   {
+                    id: 'latestAttendance',
+                    header: 'Latest attendance',
+                    cell: (row) =>
+                      row.latestAttendanceAt
+                        ? format(new Date(row.latestAttendanceAt), 'd MMM yyyy, h:mm a')
+                        : 'No check-in',
+                    tone: (row) => (row.latestAttendanceAt ? 'green' : 'muted'),
+                  },
+                  {
                     id: 'attendance',
                     header: 'Attendance',
                     cell: (row) => <PercentageValue value={row.attendanceRate} />,

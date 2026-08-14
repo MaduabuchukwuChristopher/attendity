@@ -8,7 +8,7 @@ export interface BrandMarkProps {
 
 export function BrandMark({ className, inverse = false, showName = true }: BrandMarkProps) {
   return (
-    <span className={clsx('inline-flex items-center gap-2.5', className)}>
+    <span className={clsx('inline-flex items-center gap-3', className)}>
       <svg aria-hidden="true" className="size-9 shrink-0" fill="none" viewBox="0 0 40 40">
         <rect fill={inverse ? '#FFFFFF' : '#0B6B4F'} height="40" rx="12" width="40" />
         <path

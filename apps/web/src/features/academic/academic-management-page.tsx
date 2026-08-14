@@ -335,7 +335,7 @@ export default function AcademicManagementPage({ type }: { readonly type: Entity
               <label className="grid gap-2 text-sm font-medium">
                 Department
                 <select
-                  className="h-11 rounded-xl border border-border bg-surface px-3"
+                  className="h-11 rounded-xl border border-border bg-surface px-3 text-slate-900 dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100"
                   name="departmentId"
                   required
                 >
@@ -350,7 +350,7 @@ export default function AcademicManagementPage({ type }: { readonly type: Entity
               <label className="grid gap-2 text-sm font-medium">
                 Lecturer
                 <select
-                  className="h-11 rounded-xl border border-border bg-surface px-3"
+                  className="h-11 rounded-xl border border-border bg-surface px-3 text-slate-900 dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100"
                   name="lecturerId"
                 >
                   <option value="">Assign later</option>

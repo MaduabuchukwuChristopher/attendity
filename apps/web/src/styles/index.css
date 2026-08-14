@@ -25,6 +25,37 @@
 .app-topbar {
   box-shadow: 0 8px 28px rgb(15 23 42 / 0.035);
 }
+.dashboard-scrollbars,
+.dashboard-scrollbars * {
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+}
+.dashboard-scrollbars.is-scrolling,
+.dashboard-scrollbars *:is(.is-scrolling, :hover, :focus-within) {
+  scrollbar-color: rgb(11 107 79 / 0.7) transparent;
+}
+.dashboard-scrollbars::-webkit-scrollbar,
+.dashboard-scrollbars *::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dashboard-scrollbars::-webkit-scrollbar-track,
+.dashboard-scrollbars *::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dashboard-scrollbars::-webkit-scrollbar-thumb,
+.dashboard-scrollbars *::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: transparent;
+}
+.dashboard-scrollbars:is(.is-scrolling, :hover, :focus-within)::-webkit-scrollbar-thumb,
+.dashboard-scrollbars *:is(.is-scrolling, :hover, :focus-within)::-webkit-scrollbar-thumb {
+  background: rgb(11 107 79 / 0.7);
+}
+.dark.dashboard-scrollbars:is(.is-scrolling, :hover, :focus-within)::-webkit-scrollbar-thumb,
+.dark.dashboard-scrollbars *:is(.is-scrolling, :hover, :focus-within)::-webkit-scrollbar-thumb {
+  background: rgb(52 211 153 / 0.6);
+}
 .auth-story-panel {
   position: relative;
   display: none;
@@ -318,5 +349,9 @@
     border: 1px solid CanvasText;
     background: Canvas;
     color: CanvasText;
+  }
+  .dashboard-scrollbars,
+  .dashboard-scrollbars * {
+    scrollbar-color: CanvasText Canvas;
   }
 }

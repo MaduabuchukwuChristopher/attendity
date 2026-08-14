@@ -44,13 +44,16 @@ function renderPage() {
   const client = new QueryClient({
     defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
   });
-  return render(
-    <QueryClientProvider client={client}>
-      <MemoryRouter>
-        <StudentWorkspacePage />
-      </MemoryRouter>
-    </QueryClientProvider>,
-  );
+  return {
+    client,
+    ...render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <StudentWorkspacePage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    ),
+  };
 }
 
 describe('student check-in feedback', () => {
@@ -108,7 +111,8 @@ describe('student check-in feedback', () => {
         });
       return Promise.resolve({ data: { data: { recorded: true } } });
     });
-    renderPage();
+    const { client } = renderPage();
+    const invalidate = vi.spyOn(client, 'invalidateQueries');
 
     fireEvent.click(screen.getByRole('button', { name: 'Open scanner' }));
     await waitFor(() => expect(scanSuccess).toBeDefined());
@@ -119,5 +123,7 @@ describe('student check-in feedback', () => {
       'Attendance recorded successfully.',
     );
     expect(screen.getByRole('status', { name: 'Attendance verified' })).toBeInTheDocument();
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ['attendance', 'student'] });
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ['analytics'] });
   });
 });

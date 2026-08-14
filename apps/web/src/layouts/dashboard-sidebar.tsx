@@ -3,6 +3,7 @@ import type { AuthenticatedUser } from '@qr/types';
 import { Search, X } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { usePersistentScrollRegion } from '../hooks/use-persistent-scroll-region.js';
 import type { DashboardNavGroup } from './dashboard-nav-config.js';
 
 interface DashboardSidebarProps {
@@ -21,6 +22,7 @@ export function DashboardSidebar({
   user,
 }: DashboardSidebarProps) {
   const [query, setQuery] = useState('');
+  const sidebarScroll = usePersistentScrollRegion<HTMLElement>('dashboard-sidebar');
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = groups
     .map((group) => ({
@@ -33,6 +35,8 @@ export function DashboardSidebar({
     <aside
       aria-label="Workspace navigation"
       className={`app-sidebar fixed inset-y-0 left-0 z-30 flex w-72 flex-col overflow-y-auto border-r p-5 transition-transform duration-250 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+      onScroll={sidebarScroll.onScroll}
+      ref={sidebarScroll.ref}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

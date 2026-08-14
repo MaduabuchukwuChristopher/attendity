@@ -19,7 +19,12 @@ describe('analytics report download actions', () => {
     );
 
     expect(apiClient.get).toHaveBeenCalledWith('/analytics/reports/export', {
-      params: expect.objectContaining({ format: 'xlsx', scope: 'university' }),
+      params: {
+        format: 'xlsx',
+        from: '2026-08-01',
+        scope: 'university',
+        to: '2026-08-12',
+      },
       responseType: 'blob',
     });
     expect(click).toHaveBeenCalledOnce();

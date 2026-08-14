@@ -1,6 +1,8 @@
 import {
   Card,
   CardHeader,
+  BrandMark,
+  Button,
   DataTable,
   Dialog,
   MetricCard,
@@ -8,7 +10,7 @@ import {
   SemanticValue,
 } from '@qr/ui';
 import { render, screen, within } from '@testing-library/react';
-import { CalendarDays, Users } from 'lucide-react';
+import { CalendarDays, Download, Users } from 'lucide-react';
 import { describe, expect, it } from 'vitest';
 
 describe('dashboard shared primitives', () => {
@@ -25,13 +27,27 @@ describe('dashboard shared primitives', () => {
     );
 
     expect(screen.getByRole('region', { name: 'Default dashboard card' })).toHaveClass(
-      'from-slate-100',
-      'dark:from-slate-900',
+      'bg-slate-100',
+      'dark:bg-slate-900',
     );
     expect(screen.getByText('128')).toHaveClass('text-blue-700', 'dark:text-blue-300');
     expect(screen.getByRole('heading', { name: 'Sessions' })).toBeVisible();
     expect(screen.getByTestId('card-header-icon')).toHaveClass('bg-violet-700');
     expect(screen.getByText('420')).toHaveClass('text-teal-800', 'dark:text-teal-200');
+  });
+
+  it('uses explicit shared spacing for brand and button icon labels', () => {
+    render(
+      <>
+        <BrandMark />
+        <Button>
+          <Download aria-hidden="true" /> Download report
+        </Button>
+      </>,
+    );
+
+    expect(screen.getByText('Attendity').parentElement).toHaveClass('gap-3');
+    expect(screen.getByRole('button', { name: 'Download report' })).toHaveClass('gap-2');
   });
 
   it('keeps dialog actions visible while only the content region scrolls', () => {

@@ -19,17 +19,16 @@ const variantClasses: Record<NonNullable<CardProps['variant']>, string> = {
 };
 
 const toneClasses: Record<NonNullable<CardProps['tone']>, string> = {
-  slate:
-    'border-slate-200 bg-gradient-to-br from-slate-100 via-blue-50 to-emerald-100 shadow-slate-900/5 dark:border-slate-700 dark:from-slate-900 dark:via-blue-950 dark:to-emerald-950',
+  slate: 'border-slate-200 bg-slate-100 shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900',
   green:
-    'border-emerald-200 bg-gradient-to-br from-emerald-100 via-teal-50 to-lime-100 shadow-emerald-950/5 dark:border-emerald-800 dark:from-emerald-950 dark:via-teal-950 dark:to-slate-950',
-  teal: 'border-teal-200 bg-gradient-to-br from-teal-100 via-cyan-50 to-blue-100 shadow-teal-950/5 dark:border-teal-800 dark:from-teal-950 dark:via-cyan-950 dark:to-slate-950',
-  navy: 'border-blue-300 bg-gradient-to-br from-blue-100 via-indigo-100 to-slate-200 shadow-blue-950/5 dark:border-blue-800 dark:from-blue-950 dark:via-indigo-950 dark:to-slate-950',
-  blue: 'border-blue-200 bg-gradient-to-br from-blue-100 via-cyan-50 to-sky-100 shadow-blue-950/5 dark:border-blue-800 dark:from-blue-950 dark:via-cyan-950 dark:to-slate-950',
-  gold: 'border-amber-200 bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100 shadow-amber-950/5 dark:border-amber-800 dark:from-amber-950 dark:via-orange-950 dark:to-slate-950',
-  rose: 'border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-orange-100 shadow-rose-950/5 dark:border-rose-800 dark:from-rose-950 dark:via-red-950 dark:to-slate-950',
+    'border-emerald-200 bg-emerald-100 shadow-emerald-950/5 dark:border-emerald-800 dark:bg-emerald-950',
+  teal: 'border-teal-200 bg-teal-100 shadow-teal-950/5 dark:border-teal-800 dark:bg-teal-950',
+  navy: 'border-blue-300 bg-blue-100 shadow-blue-950/5 dark:border-blue-800 dark:bg-blue-950',
+  blue: 'border-blue-200 bg-sky-100 shadow-blue-950/5 dark:border-blue-800 dark:bg-blue-950',
+  gold: 'border-amber-200 bg-amber-100 shadow-amber-950/5 dark:border-amber-800 dark:bg-amber-950',
+  rose: 'border-rose-200 bg-rose-100 shadow-rose-950/5 dark:border-rose-800 dark:bg-rose-950',
   violet:
-    'border-violet-200 bg-gradient-to-br from-violet-100 via-fuchsia-50 to-indigo-100 shadow-violet-950/5 dark:border-violet-800 dark:from-violet-950 dark:via-fuchsia-950 dark:to-slate-950',
+    'border-violet-200 bg-violet-100 shadow-violet-950/5 dark:border-violet-800 dark:bg-violet-950',
 };
 
 export function Card({

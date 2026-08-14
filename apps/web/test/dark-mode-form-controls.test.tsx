@@ -1,4 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -59,5 +61,21 @@ describe('dashboard form controls in dark mode', () => {
       'dark:text-slate-100',
       'dark:[color-scheme:dark]',
     );
+  });
+
+  it('gives registration and academic management controls explicit dark surfaces', () => {
+    const registrations = readFileSync(
+      resolve(process.cwd(), 'src/features/registrations/registration-management-page.tsx'),
+      'utf8',
+    );
+    const academics = readFileSync(
+      resolve(process.cwd(), 'src/features/academic/academic-management-page.tsx'),
+      'utf8',
+    );
+
+    expect(registrations.match(/dark:bg-dark-surface/g)?.length).toBeGreaterThanOrEqual(4);
+    expect(registrations.match(/dark:text-slate-100/g)?.length).toBeGreaterThanOrEqual(4);
+    expect(academics.match(/dark:bg-dark-surface/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(academics.match(/dark:text-slate-100/g)?.length).toBeGreaterThanOrEqual(2);
   });
 });
