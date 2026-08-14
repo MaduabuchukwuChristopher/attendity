@@ -86,6 +86,7 @@ void describe('analytics report artifacts', () => {
         attendanceRate: 80,
         requiredAttendance: 75,
         riskLevel: 'low',
+        latestAttendanceAt: '2026-08-11T09:05:00.000Z',
       },
     ],
     pagination: { page: 1, limit: 25, total: 1, pages: 1 },
@@ -103,5 +104,38 @@ void describe('analytics report artifacts', () => {
     assert.equal(pdf.subarray(0, 5).toString(), '%PDF-');
     assert.ok((workbook.getWorksheet('Attendance Report')?.getImages().length ?? 0) >= 1);
     assert.match(csv, /Attendity University/);
+  });
+
+  void it('exports the full filtered period and latest attendance across every format', async () => {
+    const service = new AnalyticsExportService();
+    const longReport: AnalyticsReport = {
+      ...report,
+      rows: Array.from({ length: 30 }, (_, index) => ({
+        ...report.rows[0]!,
+        id: `student-${index + 1}:course`,
+        studentName: `Student ${String(index + 1).padStart(2, '0')}`,
+        registrationNumber: `ATD/CSC/${String(index + 1).padStart(3, '0')}`,
+      })),
+      pagination: { page: 1, limit: 30, total: 30, pages: 1 },
+    };
+
+    const csv = service.csv(longReport).toString('utf8');
+    const xlsx = await service.excel(longReport);
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(xlsx as unknown as Parameters<typeof workbook.xlsx.load>[0]);
+    const sheet = workbook.getWorksheet('Attendance Report');
+    const pdf = await service.pdf(longReport);
+    const pdfPages = pdf.toString('latin1').match(/\/Type \/Page\b/g)?.length ?? 0;
+
+    assert.match(csv, /Reporting period,2026-08-01 to 2026-08-12/);
+    assert.match(csv, /Latest attendance/);
+    assert.match(csv, /2026-08-11T09:05:00.000Z/);
+    assert.match(csv, /Student 30/);
+    assert.ok(sheet);
+    assert.equal(sheet.getCell('A3').value, 'Reporting period');
+    assert.equal(sheet.getCell('B3').value, '2026-08-01 to 2026-08-12');
+    assert.ok(sheet.getRow(6).values.includes('Latest attendance'));
+    assert.equal(sheet.getRow(36).getCell(1).value, 'Student 30');
+    assert.ok(pdfPages >= 2);
   });
 });
