@@ -70,7 +70,7 @@ describe('dashboard shell behavior', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('reveals slim dashboard scrollbars during activity and hides them after idle', () => {
+  it('reveals slim dashboard scrollbars during activity and hides them after idle', async () => {
     vi.useFakeTimers();
     const addEventListener = vi.spyOn(document, 'addEventListener');
     render(<ScrollbarHarness />);
@@ -85,7 +85,7 @@ describe('dashboard shell behavior', () => {
     fireEvent.scroll(region);
     expect(region).toHaveClass('is-scrolling');
 
-    act(() => vi.advanceTimersByTime(900));
+    await act(() => vi.advanceTimersByTimeAsync(900));
 
     expect(region).not.toHaveClass('is-scrolling');
   });
