@@ -107,7 +107,7 @@ describe('dashboard analytics visuals', () => {
     );
 
     const metric = screen.getByLabelText('Average attendance: 78%');
-    expect(metric).toHaveClass('from-emerald-100', 'dark:from-emerald-950');
+    expect(metric).toHaveClass('bg-emerald-100', 'dark:bg-emerald-950');
     expect(screen.getByText('Across all verified sessions')).toBeVisible();
   });
 
