@@ -5,16 +5,11 @@ import type { PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar } from '../components/navbar.js';
 import { BackToTopButton } from '../components/back-to-top-button.js';
+import { portalUrl } from '../config/portal-url.js';
 
 export function LandingLayout({ children }: PropsWithChildren) {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { damping: 30, stiffness: 220 });
-  const configuredPortalUrl: unknown = import.meta.env.VITE_PORTAL_URL;
-  const portalUrl =
-    typeof configuredPortalUrl === 'string' && configuredPortalUrl.length > 0
-      ? configuredPortalUrl
-      : 'http://localhost:5173/login';
-
   return (
     <div className="min-h-screen overflow-x-clip bg-white text-slate-950">
       <a className="skip-link" href="#main-content">

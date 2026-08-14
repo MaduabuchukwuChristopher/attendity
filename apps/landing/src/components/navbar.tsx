@@ -4,6 +4,7 @@ import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { navItems } from '../constants/content.js';
+import { portalUrl } from '../config/portal-url.js';
 import { AnimatedCta } from './animated-cta.js';
 
 export function Navbar() {
@@ -11,12 +12,6 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
   useMotionValueEvent(scrollY, 'change', (latest) => setScrolled(latest > 36));
-
-  const configuredPortalUrl: unknown = import.meta.env.VITE_PORTAL_URL;
-  const portalUrl =
-    typeof configuredPortalUrl === 'string' && configuredPortalUrl.length > 0
-      ? configuredPortalUrl
-      : 'http://localhost:5173/login';
 
   return (
     <motion.header
