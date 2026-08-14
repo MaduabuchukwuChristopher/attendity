@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'A valid record identifier is required.');
+const calendarDate = z.iso.date();
 
 export const analyticsOverviewQuerySchema = z.object({
   query: z
@@ -38,8 +39,8 @@ export const analyticsReportQuerySchema = z.object({
       scope: z.enum(['university', 'course', 'student', 'risk']).default('university'),
       courseId: objectId.optional(),
       studentId: objectId.optional(),
-      from: z.coerce.date().optional(),
-      to: z.coerce.date().optional(),
+      from: calendarDate.optional(),
+      to: calendarDate.optional(),
       page: z.coerce.number().int().min(1).default(1),
       limit: z.coerce.number().int().min(10).max(100).default(25),
       format: z.enum(['pdf', 'xlsx', 'csv']).optional(),

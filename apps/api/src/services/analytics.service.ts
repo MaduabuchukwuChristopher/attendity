@@ -9,6 +9,7 @@ import type {
   AnalyticsOverview,
   AcademicPeriodPreset,
   AnalyticsReport,
+  AnalyticsReportRow,
   AttendanceInsight,
   AttendanceRisk,
   AttendanceRiskLevel,
@@ -373,6 +374,143 @@ function zonedMidnight(year: number, month: number, day: number, timeZone: strin
   return new Date(instant);
 }
 
+export function buildAnalyticsReportRows(
+  dataset: AnalyticsDataset,
+  scope: 'university' | 'course' | 'student' | 'risk',
+): readonly AnalyticsReportRow[] {
+  const latestByRegistration = new Map<string, Date>();
+  for (const record of dataset.records) {
+    const key = `${record.studentId}:${record.courseId}`;
+    const current = latestByRegistration.get(key);
+    if (!current || record.checkedInAt > current) latestByRegistration.set(key, record.checkedInAt);
+  }
+  return calculateAttendanceRisks(dataset)
+    .filter((risk) => risk.sessionsHeld > 0)
+    .filter((risk) => scope !== 'risk' || risk.level === 'high' || risk.level === 'critical')
+    .map((risk) => {
+      const latestAttendance = latestByRegistration.get(`${risk.studentId}:${risk.courseId}`);
+      return {
+        id: `${risk.studentId}:${risk.courseId}`,
+        studentName: risk.studentName,
+        registrationNumber: risk.registrationNumber,
+        courseCode: risk.courseCode,
+        courseTitle: risk.courseTitle,
+        sessionsHeld: risk.sessionsHeld,
+        sessionsAttended: risk.sessionsAttended,
+        attendanceRate: risk.currentAttendance,
+        requiredAttendance: risk.requiredAttendance,
+        riskLevel: risk.level,
+        ...(latestAttendance ? { latestAttendanceAt: latestAttendance.toISOString() } : {}),
+      } satisfies AnalyticsReportRow;
+    })
+    .sort((a, b) => {
+      if (a.latestAttendanceAt && b.latestAttendanceAt)
+        return (
+          b.latestAttendanceAt.localeCompare(a.latestAttendanceAt) ||
+          a.studentName.localeCompare(b.studentName) ||
+          a.registrationNumber.localeCompare(b.registrationNumber)
+        );
+      if (a.latestAttendanceAt) return -1;
+      if (b.latestAttendanceAt) return 1;
+      return (
+        a.studentName.localeCompare(b.studentName) ||
+        a.registrationNumber.localeCompare(b.registrationNumber)
+      );
+    });
+}
+
+function calendarParts(value: string): {
+  readonly year: number;
+  readonly month: number;
+  readonly day: number;
+} {
+  const [year, month, day] = value.split('-').map(Number);
+  if (year === undefined || month === undefined || day === undefined)
+    throw Object.assign(new Error('Report dates must use the YYYY-MM-DD format.'), {
+      statusCode: 422,
+    });
+  return { year, month, day };
+}
+
+function calendarDateKey(date: Date, timeZone: string): string {
+  const local = zonedParts(date, timeZone);
+  return [local.year, local.month, local.day]
+    .map((value, index) => (index === 0 ? String(value) : String(value).padStart(2, '0')))
+    .join('-');
+}
+
+export function resolveReportDateRange(
+  timeZone: string,
+  fromValue?: string,
+  toValue?: string,
+  now = new Date(),
+): {
+  readonly from: Date;
+  readonly to: Date;
+  readonly fromKey: string;
+  readonly toKey: string;
+  readonly days: number;
+} {
+  const toKey = toValue ?? calendarDateKey(now, timeZone);
+  const toParts = calendarParts(toKey);
+  const toSerial = new Date(Date.UTC(toParts.year, toParts.month - 1, toParts.day));
+  const defaultFromSerial = new Date(toSerial);
+  defaultFromSerial.setUTCDate(defaultFromSerial.getUTCDate() - 29);
+  const fromKey = fromValue ?? defaultFromSerial.toISOString().slice(0, 10);
+  const fromParts = calendarParts(fromKey);
+  const fromSerial = Date.UTC(fromParts.year, fromParts.month - 1, fromParts.day);
+  const selectedToSerial = Date.UTC(toParts.year, toParts.month - 1, toParts.day);
+  const days = Math.round((selectedToSerial - fromSerial) / DAY) + 1;
+  if (days < 1)
+    throw Object.assign(new Error('The report start date must not be after the end date.'), {
+      statusCode: 422,
+    });
+  if (days > 366)
+    throw Object.assign(new Error('Report ranges cannot exceed one year.'), { statusCode: 422 });
+  const nextDay = new Date(selectedToSerial);
+  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+  return {
+    from: zonedMidnight(fromParts.year, fromParts.month, fromParts.day, timeZone),
+    to: new Date(
+      zonedMidnight(
+        nextDay.getUTCFullYear(),
+        nextDay.getUTCMonth() + 1,
+        nextDay.getUTCDate(),
+        timeZone,
+      ).getTime() - 1,
+    ),
+    fromKey,
+    toKey,
+    days,
+  };
+}
+
+export function selectAnalyticsReportRows<T>(
+  rows: readonly T[],
+  page: number,
+  limit: number,
+  complete: boolean,
+): {
+  readonly rows: readonly T[];
+  readonly pagination: {
+    readonly page: number;
+    readonly limit: number;
+    readonly total: number;
+    readonly pages: number;
+  };
+} {
+  if (complete)
+    return {
+      rows,
+      pagination: { page: 1, limit: rows.length, total: rows.length, pages: rows.length ? 1 : 0 },
+    };
+  const offset = (page - 1) * limit;
+  return {
+    rows: rows.slice(offset, offset + limit),
+    pagination: { page, limit, total: rows.length, pages: Math.ceil(rows.length / limit) },
+  };
+}
+
 export function resolveAnalyticsPeriod(
   settings: AnalyticsPeriodSettings,
   query: AnalyticsPeriodQuery,
@@ -454,6 +592,14 @@ export class AnalyticsService {
     );
   }
 
+  private async reportPeriod(actor: RequestActor, from?: string, to?: string) {
+    const settings = await SystemSettingsModel.findOne({ universityId: actor.universityId })
+      .select('timeZone')
+      .lean()
+      .exec();
+    return resolveReportDateRange(settings?.timeZone ?? 'Africa/Lagos', from, to);
+  }
+
   async overview(
     actor: RequestActor,
     query: AnalyticsPeriodQuery = {},
@@ -491,44 +637,30 @@ export class AnalyticsService {
       readonly scope: 'university' | 'course' | 'student' | 'risk';
       readonly courseId?: string;
       readonly studentId?: string;
-      readonly from: Date;
-      readonly to: Date;
+      readonly from?: string;
+      readonly to?: string;
       readonly page: number;
       readonly limit: number;
+      readonly complete?: boolean;
     },
   ): Promise<AnalyticsReport> {
     const studentId = actor.role === 'student' ? actor.id : input.studentId;
+    const period = await this.reportPeriod(actor, input.from, input.to);
     const [dataset, branding] = await Promise.all([
-      analyticsRepository.dataset(actor, input.from, input.to, {
+      analyticsRepository.dataset(actor, period.from, period.to, {
         ...(input.courseId ? { courseId: input.courseId } : {}),
         ...(studentId ? { studentId } : {}),
       }),
       analyticsRepository.branding(actor.universityId),
     ]);
-    const overview = this.composeOverview(
-      dataset,
-      input.from,
-      input.to,
-      Math.max(1, Math.ceil((input.to.getTime() - input.from.getTime()) / DAY)),
-      'custom',
+    const overview = this.composeOverview(dataset, period.from, period.to, period.days, 'custom');
+    const allRows = buildAnalyticsReportRows(dataset, input.scope);
+    const selectedRows = selectAnalyticsReportRows(
+      allRows,
+      input.page,
+      input.limit,
+      input.complete ?? false,
     );
-    const allRows = calculateAttendanceRisks(dataset)
-      .filter(
-        (risk) => input.scope !== 'risk' || risk.level === 'high' || risk.level === 'critical',
-      )
-      .map((risk) => ({
-        id: `${risk.studentId}:${risk.courseId}`,
-        studentName: risk.studentName,
-        registrationNumber: risk.registrationNumber,
-        courseCode: risk.courseCode,
-        courseTitle: risk.courseTitle,
-        sessionsHeld: risk.sessionsHeld,
-        sessionsAttended: risk.sessionsAttended,
-        attendanceRate: risk.currentAttendance,
-        requiredAttendance: risk.requiredAttendance,
-        riskLevel: risk.level,
-      }));
-    const offset = (input.page - 1) * input.limit;
     const label =
       input.scope === 'risk'
         ? 'Attendance Risk Report'
@@ -538,8 +670,14 @@ export class AnalyticsService {
             ? 'Student Attendance Report'
             : 'University Attendance Report';
     const generatedAt = new Date().toISOString();
+    const appliedFilters = {
+      from: period.fromKey,
+      to: period.toKey,
+      courseId: input.courseId,
+      studentId,
+    };
     const checksum = createHash('sha256')
-      .update(JSON.stringify({ summary: overview.kpis, rows: allRows, filters: input }))
+      .update(JSON.stringify({ summary: overview.kpis, rows: allRows, filters: appliedFilters }))
       .digest('hex');
     return {
       reportId: `ATR-${dayKey(new Date()).replaceAll('-', '')}-${randomUUID().slice(0, 8).toUpperCase()}`,
@@ -553,20 +691,10 @@ export class AnalyticsService {
         checksum,
         verifiedAt: generatedAt,
       },
-      filters: {
-        from: dayKey(input.from),
-        to: dayKey(input.to),
-        courseId: input.courseId,
-        studentId,
-      },
+      filters: appliedFilters,
       summary: overview.kpis,
-      rows: allRows.slice(offset, offset + input.limit),
-      pagination: {
-        page: input.page,
-        limit: input.limit,
-        total: allRows.length,
-        pages: Math.ceil(allRows.length / input.limit),
-      },
+      rows: selectedRows.rows,
+      pagination: selectedRows.pagination,
     };
   }
 

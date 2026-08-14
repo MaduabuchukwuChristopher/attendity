@@ -73,6 +73,17 @@ void describe('analytics validation', () => {
       }).success,
       false,
     );
+    assert.equal(
+      analyticsReportQuerySchema.safeParse({
+        query: { scope: 'university', from: '08/01/2026', to: '2026-08-12' },
+      }).success,
+      false,
+    );
+    const valid = analyticsReportQuerySchema.safeParse({
+      query: { scope: 'university', from: '2026-08-01', to: '2026-08-12' },
+    });
+    assert.equal(valid.success, true);
+    if (valid.success) assert.equal(valid.data.query.from, '2026-08-01');
   });
 
   void it('validates notification filters and pagination', () => {
@@ -108,6 +119,90 @@ void describe('attendance intelligence', () => {
     assert.equal(calculateRiskLevel(90, 88, 75, 8), 'low');
     assert.equal(calculateRiskLevel(74, 70, 75, 8), 'high');
     assert.equal(calculateRiskLevel(50, 55, 75, 4), 'critical');
+  });
+
+  void it('builds report rows from selected-range sessions with newest attendance first', async () => {
+    const { buildAnalyticsReportRows } = await import('../src/services/analytics.service.js');
+    const reportDataset: AnalyticsDataset = {
+      courses: [
+        ...dataset.courses,
+        {
+          ...dataset.courses[0]!,
+          id: 'course-without-sessions',
+          code: 'CSC 499',
+          title: 'Research Project',
+        },
+      ],
+      sessions: dataset.sessions,
+      registrations: [
+        ...dataset.registrations,
+        {
+          id: 'registration-2',
+          courseId: 'course-1',
+          studentId: 'student-2',
+          registrationNumber: 'CSC/2024/002',
+        },
+        {
+          id: 'registration-3',
+          courseId: 'course-1',
+          studentId: 'student-3',
+          registrationNumber: 'CSC/2024/003',
+        },
+        {
+          id: 'registration-4',
+          courseId: 'course-without-sessions',
+          studentId: 'student-4',
+          registrationNumber: 'CSC/2024/004',
+        },
+      ],
+      records: [
+        ...dataset.records,
+        {
+          ...dataset.records[0]!,
+          id: 'record-2',
+          sessionId: 'session-4',
+          studentId: 'student-2',
+          checkedInAt: new Date('2026-07-04T09:06:00.000Z'),
+        },
+      ],
+      students: [
+        ...dataset.students,
+        { id: 'student-2', fullName: 'Bola Recent' },
+        { id: 'student-3', fullName: 'Chidi Absent' },
+        { id: 'student-4', fullName: 'Dayo No Session' },
+      ],
+    };
+
+    const rows = buildAnalyticsReportRows(reportDataset, 'university');
+
+    assert.deepEqual(
+      rows.map((row) => row.studentName),
+      ['Bola Recent', 'Ada Student', 'Chidi Absent'],
+    );
+    assert.equal(rows[0]?.latestAttendanceAt, '2026-07-04T09:06:00.000Z');
+    assert.equal(rows[2]?.latestAttendanceAt, undefined);
+    assert.equal(
+      rows.some((row) => row.courseCode === 'CSC 499'),
+      false,
+    );
+  });
+
+  void it('paginates previews but keeps every filtered row for exports', async () => {
+    const { selectAnalyticsReportRows } = await import('../src/services/analytics.service.js');
+    const rows = Array.from({ length: 30 }, (_, index) => ({ id: `row-${index + 1}` }));
+
+    const preview = selectAnalyticsReportRows(rows, 2, 10, false);
+    const complete = selectAnalyticsReportRows(rows, 2, 10, true);
+
+    assert.deepEqual(
+      preview.rows.map((row) => row.id),
+      rows.slice(10, 20).map((row) => row.id),
+    );
+    assert.equal(preview.pagination.total, 30);
+    assert.equal(preview.pagination.pages, 3);
+    assert.equal(complete.rows.length, 30);
+    assert.equal(complete.pagination.page, 1);
+    assert.equal(complete.pagination.pages, 1);
   });
 
   void it('stores session-ending notification state for idempotent workers', async () => {

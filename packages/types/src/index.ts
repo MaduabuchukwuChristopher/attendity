@@ -458,6 +458,7 @@ export interface AnalyticsReportRow {
   readonly attendanceRate: number;
   readonly requiredAttendance: number;
   readonly riskLevel: AttendanceRiskLevel;
+  readonly latestAttendanceAt?: string;
 }
 
 export interface AnalyticsReport {

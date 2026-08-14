@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { resolveAnalyticsPeriod } from '../src/services/analytics.service.js';
+import {
+  resolveAnalyticsPeriod,
+  resolveReportDateRange,
+} from '../src/services/analytics.service.js';
 
 const now = new Date('2026-08-10T19:00:00.000Z');
 const settings = {
@@ -50,5 +53,19 @@ void describe('academic analytics periods', () => {
         now,
       ),
     );
+  });
+});
+
+void describe('attendance report calendar ranges', () => {
+  void it('includes both full institution-local calendar days', () => {
+    const result = resolveReportDateRange('Africa/Lagos', '2026-08-01', '2026-08-12', now);
+
+    assert.equal(result.from.toISOString(), '2026-07-31T23:00:00.000Z');
+    assert.equal(result.to.toISOString(), '2026-08-12T22:59:59.999Z');
+  });
+
+  void it('rejects reversed and over-one-year report ranges', () => {
+    assert.throws(() => resolveReportDateRange('Africa/Lagos', '2026-08-12', '2026-08-01', now));
+    assert.throws(() => resolveReportDateRange('Africa/Lagos', '2025-01-01', '2026-08-12', now));
   });
 });

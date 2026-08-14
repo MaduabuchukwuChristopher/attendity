@@ -49,10 +49,6 @@ export const getMyAttendanceRisks: RequestHandler = async (request, response, ne
 export const generateAnalyticsReport: RequestHandler = async (request, response, next) => {
   try {
     const query = analyticsReportQuerySchema.parse({ query: request.query }).query;
-    const now = new Date();
-    const from = query.from ?? new Date(now.getTime() - 29 * 86_400_000);
-    from.setUTCHours(0, 0, 0, 0);
-    const to = query.to ?? now;
     response.json({
       success: true,
       message: 'Live attendance report generated.',
@@ -60,8 +56,8 @@ export const generateAnalyticsReport: RequestHandler = async (request, response,
         scope: query.scope,
         ...(query.courseId ? { courseId: query.courseId } : {}),
         ...(query.studentId ? { studentId: query.studentId } : {}),
-        from,
-        to,
+        ...(query.from ? { from: query.from } : {}),
+        ...(query.to ? { to: query.to } : {}),
         page: query.page,
         limit: query.limit,
       }),
@@ -76,18 +72,15 @@ export const exportAnalyticsReport: RequestHandler = async (request, response, n
   try {
     const currentActor = actor(request);
     const query = analyticsReportQuerySchema.parse({ query: request.query }).query;
-    const now = new Date();
-    const from = query.from ?? new Date(now.getTime() - 29 * 86_400_000);
-    from.setUTCHours(0, 0, 0, 0);
-    const to = query.to ?? now;
     const report = await analyticsService.report(currentActor, {
       scope: query.scope,
       ...(query.courseId ? { courseId: query.courseId } : {}),
       ...(query.studentId ? { studentId: query.studentId } : {}),
-      from,
-      to,
+      ...(query.from ? { from: query.from } : {}),
+      ...(query.to ? { to: query.to } : {}),
       page: query.page,
       limit: query.limit,
+      complete: true,
     });
     const logo = await trustedMediaService.resolveImage({
       universityId: currentActor.universityId,
