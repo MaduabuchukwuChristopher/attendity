@@ -6,11 +6,33 @@ import { useTheme } from '../../contexts/theme-context.js';
 
 export function AuthLayout({ children }: PropsWithChildren) {
   const { preference, setPreference } = useTheme();
+  const toggleTheme = () => setPreference(preference === 'dark' ? 'light' : 'dark');
   return (
-    <main className="auth-shell grid min-h-screen bg-background text-slate-950 dark:bg-dark-background dark:text-white lg:grid-cols-[minmax(24rem,0.94fr)_1.06fr]">
+    <main className="auth-shell grid min-h-screen max-w-full overflow-x-clip bg-background text-slate-950 dark:bg-dark-background dark:text-white lg:grid-cols-[minmax(24rem,0.94fr)_1.06fr]">
       <a className="skip-link" href="#auth-content">
         Skip to form
       </a>
+      <nav
+        aria-label="Authentication navigation"
+        className="sticky top-0 z-40 flex min-h-16 w-full items-center justify-between border-b border-academic-gold/45 bg-university-navy px-4 text-white shadow-lg shadow-slate-950/15 lg:hidden"
+      >
+        <Link aria-label="Attendity sign in" to="/login">
+          <BrandMark inverse />
+        </Link>
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="hidden truncate text-xs font-bold uppercase tracking-[0.12em] text-emerald-100 min-[390px]:block">
+            University portal
+          </span>
+          <button
+            aria-label="Toggle theme"
+            className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/15 bg-white/10 text-academic-gold transition hover:bg-white/15"
+            onClick={toggleTheme}
+            type="button"
+          >
+            {preference === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
+      </nav>
       <section className="auth-story-panel">
         <img
           alt="Student using Attendity at a university lecture theatre"
@@ -57,16 +79,13 @@ export function AuthLayout({ children }: PropsWithChildren) {
       >
         <button
           aria-label="Toggle theme"
-          className="auth-theme-toggle absolute right-5 top-5 grid size-11 place-items-center rounded-xl border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-dark-surface"
-          onClick={() => setPreference(preference === 'dark' ? 'light' : 'dark')}
+          className="auth-theme-toggle absolute right-5 top-5 hidden size-11 place-items-center rounded-xl border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-dark-surface lg:grid"
+          onClick={toggleTheme}
           type="button"
         >
           {preference === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
-        <div className="auth-form-reveal auth-form-container w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <BrandMark />
-          </div>
+        <div className="auth-form-reveal auth-form-container min-w-0 w-full max-w-md">
           {children}
           <p className="mt-7 text-center text-xs text-slate-600 dark:text-slate-300">
             Secure access for authorised institution users only.

@@ -65,14 +65,14 @@ export function DataTable<T>({
     return `row-${index}`;
   };
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-emerald-50 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+    <div className="min-w-0 max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 bg-emerald-50 shadow-sm dark:border-slate-700 dark:bg-slate-950">
       <table className="w-full min-w-150 text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="border-b border-university-navy bg-university-navy text-xs uppercase tracking-wide text-white dark:border-emerald-800 dark:bg-slate-900">
           <tr>
             {columns.map((column) => (
               <th
-                className="bg-university-navy px-5 py-3 font-semibold text-white dark:bg-slate-900"
+                className="whitespace-nowrap bg-university-navy px-4 py-3 font-semibold text-white dark:bg-slate-900 sm:px-5"
                 key={column.id}
                 scope="col"
               >
@@ -104,7 +104,7 @@ export function DataTable<T>({
                   return (
                     <td
                       className={clsx(
-                        'px-5 py-4 first:font-semibold',
+                        'px-4 py-4 align-top first:font-semibold sm:px-5',
                         cellTone
                           ? cellToneClasses[cellTone]
                           : 'text-slate-800 first:text-university-navy dark:text-slate-100 dark:first:text-blue-100',

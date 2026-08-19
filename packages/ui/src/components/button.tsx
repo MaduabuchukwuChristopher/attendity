@@ -52,7 +52,7 @@ export function buttonClassName(
   className?: string,
 ): string {
   return clsx(
-    'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 active:scale-[0.98]',
+    'inline-flex min-h-10 max-w-full items-center justify-center gap-2 whitespace-normal break-words rounded-xl px-4 text-center text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 active:scale-[0.98]',
     variantClasses[variant],
     className,
   );

@@ -43,7 +43,10 @@ export function DashboardLayout({ children }: PropsWithChildren) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:bg-dark-background dark:text-slate-100">
+    <div
+      className="min-h-screen min-w-0 max-w-full overflow-x-clip bg-background text-slate-900 dark:bg-dark-background dark:text-slate-100"
+      data-testid="dashboard-shell"
+    >
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>
@@ -59,12 +62,12 @@ export function DashboardLayout({ children }: PropsWithChildren) {
       {open ? (
         <button
           aria-label="Close navigation overlay"
-          className="fixed inset-0 z-20 bg-slate-950/40 backdrop-blur-[1px] lg:hidden"
+          className="fixed inset-0 z-[45] bg-slate-950/40 backdrop-blur-[1px] lg:hidden"
           onClick={() => setOpen(false)}
           type="button"
         />
       ) : null}
-      <div className="lg:pl-72">
+      <div className="min-w-0 max-w-full lg:pl-72">
         {user ? (
           <DashboardTopbar
             canViewNotifications={canViewNotifications}
@@ -79,7 +82,11 @@ export function DashboardLayout({ children }: PropsWithChildren) {
             user={user}
           />
         ) : null}
-        <main className="mx-auto max-w-7xl p-5 sm:p-8" id="main-content" tabIndex={-1}>
+        <main
+          className="dashboard-content mx-auto min-w-0 w-full max-w-full overflow-x-clip px-4 py-5 sm:p-8 2xl:max-w-7xl"
+          id="main-content"
+          tabIndex={-1}
+        >
           {children}
         </main>
       </div>

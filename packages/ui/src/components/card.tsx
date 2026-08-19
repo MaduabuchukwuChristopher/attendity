@@ -41,6 +41,7 @@ export function Card({
   return (
     <section
       className={clsx(
+        'min-w-0 max-w-full',
         variantClasses[variant],
         variant === 'glass' ? undefined : toneClasses[tone],
         className,

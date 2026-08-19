@@ -50,7 +50,7 @@ export function Dialog({ children, footer, isOpen, onClose, title }: DialogProps
   return (
     <div
       aria-modal="true"
-      className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4"
+      className="fixed inset-0 z-50 grid place-items-center overflow-x-hidden bg-slate-950/45 p-2 sm:p-4"
       role="dialog"
       aria-labelledby={titleId}
     >
@@ -62,12 +62,12 @@ export function Dialog({ children, footer, isOpen, onClose, title }: DialogProps
         type="button"
       />
       <section
-        className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xl dark:border-slate-800 dark:bg-dark-surface"
+        className="relative flex max-h-[calc(100dvh-2rem)] min-w-0 w-full max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-xl dark:border-slate-800 dark:bg-dark-surface sm:max-w-lg"
         data-testid="dialog-panel"
         ref={dialogRef}
       >
-        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5 dark:border-slate-800">
-          <h2 className="text-lg font-semibold" id={titleId}>
+        <header className="flex min-w-0 shrink-0 items-start justify-between gap-4 border-b border-border px-4 py-4 dark:border-slate-800 sm:px-6 sm:py-5">
+          <h2 className="min-w-0 break-words text-lg font-semibold" id={titleId}>
             {title}
           </h2>
           <button
@@ -81,13 +81,13 @@ export function Dialog({ children, footer, isOpen, onClose, title }: DialogProps
           </button>
         </header>
         <div
-          className="min-h-0 flex-1 overflow-y-auto px-6 py-4"
+          className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:px-6"
           data-testid="dialog-scroll-region"
         >
           {children}
         </div>
         {footer ? (
-          <footer className="flex shrink-0 justify-end gap-3 border-t border-border px-6 py-4 dark:border-slate-800">
+          <footer className="flex max-w-full shrink-0 flex-col-reverse gap-3 border-t border-border px-4 py-4 dark:border-slate-800 sm:flex-row sm:justify-end sm:px-6 [&>*]:w-full sm:[&>*]:w-auto">
             {footer}
           </footer>
         ) : null}

@@ -34,7 +34,7 @@ export function DashboardSidebar({
   return (
     <aside
       aria-label="Workspace navigation"
-      className={`app-sidebar fixed inset-y-0 left-0 z-30 flex w-72 flex-col overflow-y-auto border-r p-5 transition-transform duration-250 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+      className={`app-sidebar fixed inset-y-0 left-0 z-50 flex w-[min(18rem,calc(100vw-1rem))] flex-col overflow-y-auto border-r p-4 transition-transform duration-250 sm:p-5 lg:w-72 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       onScroll={sidebarScroll.onScroll}
       ref={sidebarScroll.ref}
     >

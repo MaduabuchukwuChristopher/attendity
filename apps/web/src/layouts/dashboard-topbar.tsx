@@ -29,7 +29,7 @@ export function DashboardTopbar({
   user,
 }: DashboardTopbarProps) {
   return (
-    <header className="app-topbar sticky top-0 z-10 flex min-h-18 items-center justify-between border-b border-emerald-700 bg-university-navy px-4 text-white shadow-lg shadow-slate-950/10 dark:border-emerald-500 dark:bg-slate-950 sm:px-6">
+    <header className="app-topbar sticky top-0 z-40 flex min-h-18 min-w-0 w-full max-w-full items-center justify-between border-b border-emerald-700 bg-university-navy px-3 text-white shadow-lg shadow-slate-950/10 dark:border-emerald-500 dark:bg-slate-950 sm:px-6">
       <button
         aria-label="Open navigation"
         className="grid size-10 place-items-center rounded-xl text-white hover:bg-white/10 dark:text-white dark:hover:bg-white/10 lg:hidden"
@@ -87,7 +87,7 @@ export function DashboardTopbar({
               {user.fullName}
             </span>
           </summary>
-          <div className="absolute right-0 mt-2 w-68 rounded-2xl border border-border bg-surface p-2 text-slate-900 shadow-xl dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100">
+          <div className="absolute right-0 mt-2 w-[min(17rem,calc(100vw-1.5rem))] rounded-2xl border border-border bg-surface p-2 text-slate-900 shadow-xl dark:border-slate-700 dark:bg-dark-surface dark:text-slate-100">
             <div className="border-b border-border px-3 py-3 dark:border-slate-700">
               <p className="truncate text-sm font-semibold">{user.fullName}</p>
               <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">

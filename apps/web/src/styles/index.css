@@ -244,6 +244,8 @@
 }
 @layer base {
   html {
+    max-width: 100%;
+    overflow-x: clip;
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     color-scheme: light;
   }
@@ -252,9 +254,16 @@
   }
   body {
     margin: 0;
-    min-width: 320px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+  #root {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
   }
   #main-content > * {
     animation: attendity-page-in 250ms ease-out;
@@ -284,6 +293,25 @@
   ::after {
     border-color: var(--color-border);
   }
+}
+.dashboard-content > *,
+.dashboard-content form,
+.dashboard-content fieldset,
+.dashboard-content label,
+.dashboard-content .grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.dashboard-content :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+.dashboard-content :is(img, video, canvas) {
+  max-width: 100%;
+}
+.dashboard-content :is(p, dd, td, th) {
+  overflow-wrap: anywhere;
 }
 @keyframes attendity-page-in {
   from {
