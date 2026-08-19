@@ -66,7 +66,7 @@ export function DataTable<T>({
   };
   return (
     <div className="min-w-0 max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200 bg-emerald-50 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-      <table className="w-full min-w-150 text-left text-sm">
+      <table className="w-max min-w-full text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="border-b border-university-navy bg-university-navy text-xs uppercase tracking-wide text-white dark:border-emerald-800 dark:bg-slate-900">
           <tr>
@@ -104,7 +104,7 @@ export function DataTable<T>({
                   return (
                     <td
                       className={clsx(
-                        'px-4 py-4 align-top first:font-semibold sm:px-5',
+                        'whitespace-nowrap px-4 py-4 align-top first:font-semibold sm:px-5',
                         cellTone
                           ? cellToneClasses[cellTone]
                           : 'text-slate-800 first:text-university-navy dark:text-slate-100 dark:first:text-blue-100',

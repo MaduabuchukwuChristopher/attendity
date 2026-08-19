@@ -88,7 +88,7 @@ describe('mobile responsive shared surfaces', () => {
     );
   });
 
-  it('contains wide tables inside their own horizontal scroll region', () => {
+  it('preserves readable table columns inside their own horizontal scroll region', () => {
     render(
       <DataTable
         caption="Responsive attendance"
@@ -100,12 +100,18 @@ describe('mobile responsive shared surfaces', () => {
       />,
     );
 
-    expect(screen.getByRole('table', { name: 'Responsive attendance' }).parentElement).toHaveClass(
+    const table = screen.getByRole('table', { name: 'Responsive attendance' });
+
+    expect(table.parentElement).toHaveClass(
       'min-w-0',
       'max-w-full',
       'overflow-x-auto',
       'overscroll-x-contain',
     );
+    expect(table).toHaveClass('w-max', 'min-w-full');
+    for (const cell of screen.getAllByRole('cell')) {
+      expect(cell).toHaveClass('whitespace-nowrap');
+    }
   });
 
   it('stacks dialog actions and constrains shared form controls on small screens', () => {
