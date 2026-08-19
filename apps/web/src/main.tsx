@@ -11,6 +11,7 @@ const updateServiceWorker = registerSW({
   onNeedRefresh: () => document.dispatchEvent(new Event('attendity:update-ready')),
 });
 
+// Promote the waiting PWA release instead of reloading the currently active cache.
 document.addEventListener('attendity:apply-update', () => {
   void updateServiceWorker(true);
 });
