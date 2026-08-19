@@ -32,7 +32,7 @@ export function ConnectivityStatus() {
       {updateReady ? (
         <button
           className="shrink-0 rounded-lg bg-white px-3 py-1.5 font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          onClick={() => window.location.reload()}
+          onClick={() => document.dispatchEvent(new Event('attendity:apply-update'))}
           type="button"
         >
           Update

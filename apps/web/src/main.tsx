@@ -6,9 +6,13 @@ import { router } from './routes/router.js';
 import './styles/index.css';
 import { registerSW } from 'virtual:pwa-register';
 
-registerSW({
+const updateServiceWorker = registerSW({
   immediate: true,
   onNeedRefresh: () => document.dispatchEvent(new Event('attendity:update-ready')),
+});
+
+document.addEventListener('attendity:apply-update', () => {
+  void updateServiceWorker(true);
 });
 
 createRoot(document.getElementById('root')!).render(

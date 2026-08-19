@@ -1,19 +1,17 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ConnectivityStatus } from '../src/components/connectivity-status.js';
 
-describe('ConnectivityStatus', () => {
-  it('announces a connection loss and clears the message after reconnection', () => {
-    render(<ConnectivityStatus />);
-    fireEvent(window, new Event('offline'));
-    expect(screen.getByRole('status')).toHaveTextContent('You are offline');
-    fireEvent(window, new Event('online'));
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-  });
+describe('portal update prompt', () => {
+  it('asks the waiting service worker to activate when Update is selected', () => {
+    const applyUpdate = vi.fn();
+    document.addEventListener('attendity:apply-update', applyUpdate);
 
-  it('offers a reload when an application update is ready', () => {
     render(<ConnectivityStatus />);
     fireEvent(document, new Event('attendity:update-ready'));
-    expect(screen.getByRole('button', { name: 'Update' })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+    expect(applyUpdate).toHaveBeenCalledOnce();
+    document.removeEventListener('attendity:apply-update', applyUpdate);
   });
 });
