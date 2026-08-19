@@ -4,7 +4,10 @@ import { describe, it } from 'node:test';
 import { registerSchema, loginSchema } from '../src/validators/auth.validator.js';
 import { UserModel } from '../src/models/user.model.js';
 import { passwordRequirements } from '../../web/src/features/auth/auth-utils.js';
-import { serializeAuthenticatedUser } from '../src/services/auth.service.js';
+import {
+  assertDemoRegistrationAllowed,
+  serializeAuthenticatedUser,
+} from '../src/services/auth.service.js';
 import { signAccessToken } from '../src/utils/tokens.js';
 import jsonwebtoken from 'jsonwebtoken';
 
@@ -52,6 +55,19 @@ void describe('account registration and login contracts', () => {
       assert.equal(result.data.body.universityId, 'lagos-metropolitan-university');
       assert.equal(result.data.body.rememberMe, false);
     }
+  });
+
+  void it('keeps assessment role registration explicitly gated and university-scoped', () => {
+    const input = {
+      universityId: 'lagos-metropolitan-university',
+      role: 'lecturer' as const,
+    };
+    assert.doesNotThrow(() => assertDemoRegistrationAllowed(input, true));
+    assert.throws(() => assertDemoRegistrationAllowed(input, false), /not currently available/i);
+    assert.throws(
+      () => assertDemoRegistrationAllowed({ ...input, universityId: 'another-university' }, true),
+      /limited to the demonstration university/i,
+    );
   });
 
   void it('matches frontend and backend password security requirements', () => {

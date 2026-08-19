@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ASSESSMENT_REGISTRATION_ROLES } from '@qr/shared';
 export const securePasswordSchema = z
   .string()
   .min(12)
@@ -15,6 +16,18 @@ export const registerSchema = z.object({
       lastName: z.string().trim().min(1).max(80),
       email: z.email().max(254),
       password: securePasswordSchema,
+    })
+    .strict(),
+});
+export const demoRegisterSchema = z.object({
+  body: z
+    .object({
+      universityId: z.literal('lagos-metropolitan-university'),
+      firstName: z.string().trim().min(1).max(80),
+      lastName: z.string().trim().min(1).max(80),
+      email: z.email().max(254),
+      password: securePasswordSchema,
+      role: z.enum(ASSESSMENT_REGISTRATION_ROLES),
     })
     .strict(),
 });

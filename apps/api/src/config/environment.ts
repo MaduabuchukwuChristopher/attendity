@@ -95,6 +95,7 @@ const environmentSchema = z
     CLOUDINARY_API_KEY: optionalString,
     CLOUDINARY_API_SECRET: optionalSecret,
     CLOUDINARY_FOLDER: z.string().trim().min(1).max(80).default('attendity'),
+    ALLOW_DEMO_ROLE_REGISTRATION: environmentBoolean(false),
   })
   .superRefine((values, context) => {
     if (

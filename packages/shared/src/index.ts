@@ -21,6 +21,13 @@ export const USER_ROLES: readonly UserRole[] = [
   'viewer',
 ];
 
+export const ASSESSMENT_REGISTRATION_ROLES = [
+  'university_admin',
+  'lecturer',
+  'examiner',
+  'student',
+] as const satisfies readonly UserRole[];
+
 export const STAFF_INVITABLE_ROLES: readonly StaffInvitableRole[] = [
   'university_admin',
   'faculty_admin',

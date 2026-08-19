@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import type { AuthenticatedUser, RequestActor, TokenPair } from '@qr/types';
-import { ROLE_PERMISSIONS } from '@qr/shared';
+import type { AuthenticatedUser, RequestActor, TokenPair, UserRole } from '@qr/types';
+import { ASSESSMENT_REGISTRATION_ROLES, ROLE_PERMISSIONS } from '@qr/shared';
 import { isValidObjectId } from 'mongoose';
 import { environment } from '../config/environment.js';
 import { AccountTokenModel } from '../models/account-token.model.js';
@@ -32,15 +32,53 @@ export function serializeAuthenticatedUser(user: {
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_DURATION_MS = 15 * 60 * 1000;
+interface RegistrationInput {
+  readonly universityId: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly email: string;
+  readonly password: string;
+}
+
+export function assertDemoRegistrationAllowed(
+  input: Pick<RegistrationInput, 'universityId'> & { readonly role: UserRole },
+  enabled = environment.ALLOW_DEMO_ROLE_REGISTRATION,
+): void {
+  if (!enabled)
+    throw Object.assign(new Error('Assessment role registration is not currently available.'), {
+      statusCode: 403,
+    });
+  if (input.universityId.trim().toLowerCase() !== 'lagos-metropolitan-university')
+    throw Object.assign(
+      new Error('Assessment registration is limited to the demonstration university.'),
+      {
+        statusCode: 403,
+      },
+    );
+  if (!ASSESSMENT_REGISTRATION_ROLES.some((role) => role === input.role))
+    throw Object.assign(
+      new Error('This account role is not available for assessment registration.'),
+      {
+        statusCode: 403,
+      },
+    );
+}
+
 export class AuthService {
   private readonly users = new UserRepository();
-  async register(input: {
-    universityId: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  }): Promise<AuthenticatedUser> {
+  async register(input: RegistrationInput): Promise<AuthenticatedUser> {
+    return this.createRegistration(input, 'student');
+  }
+  async registerDemo(
+    input: RegistrationInput & { readonly role: (typeof ASSESSMENT_REGISTRATION_ROLES)[number] },
+  ): Promise<AuthenticatedUser> {
+    assertDemoRegistrationAllowed(input);
+    return this.createRegistration(input, input.role);
+  }
+  private async createRegistration(
+    input: RegistrationInput,
+    role: (typeof ASSESSMENT_REGISTRATION_ROLES)[number],
+  ): Promise<AuthenticatedUser> {
     const universityId = await this.resolveUniversity(input.universityId);
     if (!universityId) throw new Error('Institution resolution failed.');
     const normalizedEmail = input.email.trim().toLowerCase();
@@ -56,7 +94,7 @@ export class AuthService {
       universityId,
       email: normalizedEmail,
       passwordHash: await bcrypt.hash(input.password, environment.BCRYPT_ROUNDS),
-      role: 'student',
+      role,
     });
     const publicUser = this.toUser(user);
     const token = await this.issueAccountToken(publicUser, 'verify_email', 24 * 60 * 60 * 1000);

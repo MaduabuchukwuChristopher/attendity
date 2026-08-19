@@ -91,7 +91,7 @@ const routes: readonly DocumentedRoute[] = [
   {
     method: 'post',
     path: '/api/v1/auth/register',
-    summary: 'Register a university account',
+    summary: 'Register a student account',
     tag: 'Authentication',
     requestExample: {
       universityId: 'lagos-metropolitan-university',
@@ -99,6 +99,20 @@ const routes: readonly DocumentedRoute[] = [
       lastName: 'Okafor',
       email: 'ada.okafor@university.edu.ng',
       password: 'SecurePassphrase2026!',
+    },
+  },
+  {
+    method: 'post',
+    path: '/api/v1/auth/demo-register',
+    summary: 'Register an assessment account when demonstration role registration is enabled',
+    tag: 'Authentication',
+    requestExample: {
+      universityId: 'lagos-metropolitan-university',
+      firstName: 'Ada',
+      lastName: 'Okafor',
+      email: 'ada.okafor@university.edu.ng',
+      password: 'SecurePassphrase2026!',
+      role: 'lecturer',
     },
   },
   {

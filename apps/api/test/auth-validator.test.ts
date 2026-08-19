@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
   changePasswordSchema,
+  demoRegisterSchema,
   emailRequestSchema,
   registerSchema,
 } from '../src/validators/auth.validator.js';
@@ -19,6 +20,18 @@ void describe('authentication and public inquiry validation', () => {
     assert.equal(registerSchema.safeParse({ body: validRegistration }).success, true);
     assert.equal(
       registerSchema.safeParse({ body: { ...validRegistration, role: 'super_admin' } }).success,
+      false,
+    );
+  });
+  void it('allows only the approved assessment registration roles', () => {
+    for (const role of ['university_admin', 'lecturer', 'examiner', 'student']) {
+      assert.equal(
+        demoRegisterSchema.safeParse({ body: { ...validRegistration, role } }).success,
+        true,
+      );
+    }
+    assert.equal(
+      demoRegisterSchema.safeParse({ body: { ...validRegistration, role: 'super_admin' } }).success,
       false,
     );
   });

@@ -1,13 +1,22 @@
-import type { ApiResponse, AuthenticatedUser } from '@qr/types';
-import { Button, Card, Input } from '@qr/ui';
+import type { ApiResponse, AuthenticatedUser, UserRole } from '@qr/types';
+import { Button, Card, Input, Select } from '@qr/ui';
 import { Check, Circle } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { apiClient } from '../../api/client.js';
 import { AuthLayout } from './auth-layout.js';
 import { apiErrorMessage, passwordRequirements } from './auth-utils.js';
+import {
+  assessmentRegistrationEnabled,
+  assessmentRoleOptions,
+  DEFAULT_INSTITUTION_CODE,
+  institutionOptions,
+  roleLabel,
+} from './auth-options.js';
 
 export default function RegisterPage() {
+  const demoRegistration = assessmentRegistrationEnabled();
+  const [role, setRole] = useState<UserRole>('student');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -18,13 +27,17 @@ export default function RegisterPage() {
     setError('');
     const data = new FormData(event.currentTarget);
     try {
-      const response = await apiClient.post<ApiResponse<AuthenticatedUser>>('/auth/register', {
-        universityId: data.get('universityId'),
-        firstName: data.get('firstName'),
-        lastName: data.get('lastName'),
-        email: data.get('email'),
-        password,
-      });
+      const response = await apiClient.post<ApiResponse<AuthenticatedUser>>(
+        demoRegistration ? '/auth/demo-register' : '/auth/register',
+        {
+          universityId: data.get('universityId'),
+          firstName: data.get('firstName'),
+          lastName: data.get('lastName'),
+          email: data.get('email'),
+          password,
+          ...(demoRegistration ? { role } : {}),
+        },
+      );
       if (response.status >= 200 && response.status < 300) {
         setSuccess(true);
       } else {
@@ -38,10 +51,14 @@ export default function RegisterPage() {
   };
   return (
     <AuthLayout>
-      <p className="auth-form-kicker">Student registration</p>
+      <p className="auth-form-kicker">
+        {demoRegistration ? 'Assessment registration' : 'Student registration'}
+      </p>
       <h1 className="auth-form-title">Create your account</h1>
       <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
-        Staff accounts are created by invitation from an authorised institution administrator.
+        {demoRegistration
+          ? 'Choose the university role you want to test. Existing demonstration accounts and their records remain unchanged.'
+          : 'Staff accounts are created by invitation from an authorised institution administrator.'}
       </p>
       <Card className="auth-form-card mt-7 p-6 sm:p-7">
         {success ? (
@@ -62,7 +79,32 @@ export default function RegisterPage() {
           </div>
         ) : (
           <form className="grid gap-5" onSubmit={(event) => void submit(event)}>
-            <Input label="Institution code" name="universityId" required />
+            <Select
+              defaultValue={DEFAULT_INSTITUTION_CODE}
+              label="Institution code"
+              name="universityId"
+              required
+            >
+              {institutionOptions.map((institution) => (
+                <option key={institution.value} value={institution.value}>
+                  {institution.label}
+                </option>
+              ))}
+            </Select>
+            {demoRegistration ? (
+              <Select
+                label="Account role"
+                name="role"
+                onChange={(event) => setRole(event.currentTarget.value as UserRole)}
+                value={role}
+              >
+                {assessmentRoleOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
+            ) : null}
             <div className="grid gap-5 sm:grid-cols-2">
               <Input autoComplete="given-name" label="First name" name="firstName" required />
               <Input autoComplete="family-name" label="Last name" name="lastName" required />
@@ -107,7 +149,9 @@ export default function RegisterPage() {
               disabled={submitting || !passwordRequirements.every((item) => item.test(password))}
               type="submit"
             >
-              {submitting ? 'Creating account…' : 'Create student account'}
+              {submitting
+                ? 'Creating account…'
+                : `Create ${demoRegistration ? roleLabel(role) : 'Student'} account`}
             </Button>
           </form>
         )}

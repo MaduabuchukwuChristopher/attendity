@@ -81,6 +81,7 @@ export async function refreshSession(): Promise<SessionPayload> {
 const UNAUTHENTICATED_AUTH_ENDPOINTS = [
   '/auth/login',
   '/auth/register',
+  '/auth/demo-register',
   '/auth/refresh',
   '/auth/verify-email',
   '/auth/resend-verification',

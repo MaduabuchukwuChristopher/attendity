@@ -29,6 +29,19 @@ export const register: RequestHandler = async (request, response, next) => {
     next(error);
   }
 };
+export const demoRegister: RequestHandler = async (request, response, next) => {
+  try {
+    const user = await authService.registerDemo(request.body);
+    response.status(201).json({
+      success: true,
+      message: 'Assessment account registered. Verify your email before signing in.',
+      data: user,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 export const inspectInvitation: RequestHandler = async (request, response, next) => {
   try {
     const token = request.params.token;

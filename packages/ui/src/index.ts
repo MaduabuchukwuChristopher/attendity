@@ -8,6 +8,8 @@ export { SemanticValue } from './components/semantic-value.js';
 export type { SemanticTone, SemanticValueProps } from './components/semantic-value.js';
 export { Input } from './components/input.js';
 export type { InputProps } from './components/input.js';
+export { Select } from './components/select.js';
+export type { SelectProps } from './components/select.js';
 export { Badge } from './components/badge.js';
 export type { BadgeProps } from './components/badge.js';
 export { DataTable } from './components/data-table.js';

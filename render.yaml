@@ -54,6 +54,8 @@ services:
         value: attendity
       - key: ALLOW_DEMO_SEED
         value: false
+      - key: ALLOW_DEMO_ROLE_REGISTRATION
+        value: false
       - key: ALLOW_DATABASE_RESTORE
         value: false
       - key: ALLOW_INSTITUTION_CONFIG_MIGRATION

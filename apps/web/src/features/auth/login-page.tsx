@@ -1,5 +1,5 @@
 import type { ApiResponse, AuthenticatedUser } from '@qr/types';
-import { Button, Card, Input } from '@qr/ui';
+import { Button, Card, Input, Select } from '@qr/ui';
 import { Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { apiClient } from '../../api/client.js';
 import { useAuthStore } from '../../store/auth-store.js';
 import { AuthLayout } from './auth-layout.js';
 import { apiErrorMessage, roleHome } from './auth-utils.js';
+import { DEFAULT_INSTITUTION_CODE, institutionOptions } from './auth-options.js';
 
 interface SessionPayload {
   readonly user: AuthenticatedUser;
@@ -59,13 +60,19 @@ export default function LoginPage() {
           </p>
         ) : null}
         <form className="grid gap-5" onSubmit={(event) => void submit(event)}>
-          <Input
+          <Select
             autoComplete="organization"
+            defaultValue={DEFAULT_INSTITUTION_CODE}
             label="Institution code"
             name="universityId"
-            placeholder="lagos-metropolitan-university"
             required
-          />
+          >
+            {institutionOptions.map((institution) => (
+              <option key={institution.value} value={institution.value}>
+                {institution.label}
+              </option>
+            ))}
+          </Select>
           <Input autoComplete="email" label="Email address" name="email" required type="email" />
           <div className="relative">
             <Input

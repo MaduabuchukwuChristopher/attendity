@@ -2,6 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import {
   changePassword,
+  demoRegister,
   acceptInvitation,
   forgotPassword,
   listSessions,
@@ -19,6 +20,7 @@ import {
 import { validate } from '../middlewares/validate.middleware.js';
 import {
   changePasswordSchema,
+  demoRegisterSchema,
   emailRequestSchema,
   loginSchema,
   registerSchema,
@@ -48,6 +50,7 @@ const sessionLimiter = rateLimit({
   message: { success: false, message: 'Too many session refresh requests.', data: null },
 });
 authRouter.post('/register', authLimiter, validate(registerSchema), register);
+authRouter.post('/demo-register', authLimiter, validate(demoRegisterSchema), demoRegister);
 authRouter.get(
   '/invitations/:token',
   authLimiter,

@@ -18,6 +18,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 const structureBase = {
@@ -93,7 +94,8 @@ const profileDepartments = [
 ];
 
 describe('role profile entry points', () => {
-  it('clearly limits public registration to students', () => {
+  it('preserves student-only registration when assessment registration is disabled', () => {
+    vi.stubEnv('VITE_ALLOW_DEMO_ROLE_REGISTRATION', 'false');
     render(
       <ThemeProvider>
         <MemoryRouter>
