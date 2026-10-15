@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS build
+FROM node:26-bookworm-slim AS build
 WORKDIR /workspace
 COPY package.json package-lock.json tsconfig*.json eslint.config.js ./
 COPY apps/api/package.json apps/api/package.json
@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 RUN npm run build -w @qr/types && npm run build -w @qr/shared && npm run build -w @qr/api
 
-FROM node:22-bookworm-slim AS production
+FROM node:26-bookworm-slim AS production
 ENV NODE_ENV=production
 WORKDIR /workspace
 COPY package.json package-lock.json ./
